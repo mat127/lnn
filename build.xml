@@ -1,0 +1,65 @@
+<!--
+  $Id: build.xml,v 1.1 2006/04/19 13:53:48 mat127 Exp $
+
+  DESCRIPTION
+
+  @author Petr Matousek <petr.matousek@billboard.cz>
+  @since  2005-02-16
+-->
+
+<project name="lnn" default="all" basedir=".">
+
+  <property file="${basedir}/build.properties"/>
+
+  <property name="src.dir"   value="${basedir}/src"/>
+  <property name="build.dir" value="${basedir}/build"/>
+  <property name="class.dir" value="${build.dir}/classes"/>
+  <property name="docs.dir"  value="${basedir}/docs"/>
+
+  <!-- Lotus Notes classpath -->
+  <path id="notes.classpath">
+    <pathelement location="${notes.home}/Notes.jar"/>
+  </path>
+
+  <path id="smack.classpath">
+    <pathelement location="${smack.home}/smack.jar" />
+    <pathelement location="${smack.home}/smackx.jar" />
+	</path>
+
+  <!-- The compile classpath -->
+  <path id="compile.classpath">
+    <path refid="notes.classpath"/>
+    <path refid="smack.classpath"/>
+    <pathelement location="${class.dir}"/>
+  </path>
+
+  <!-- Initialises the build -->
+  <target name="prepare">
+    <mkdir dir="${class.dir}"/>
+  </target>
+
+  <!-- Clean up the build -->
+  <target name="clean">
+   <delete dir="${build.dir}" />
+  </target>
+
+  <!-- Compiles the source code -->
+  <target name="compile" depends="prepare">
+    <javac destdir="${class.dir}" classpathref="compile.classpath" debug="on">
+      <src path="${src.dir}"/>
+    </javac>
+  </target>
+
+  <target name="package" depends="compile">
+    <jar destfile="${build.dir}/lnn.jar">
+		  <fileset dir="${class.dir}" excludes="net/sf/lnn/test/**" />  
+		</jar>
+  </target>
+
+  <target name="test-jabber" depends="compile">
+    <java classname="net.sf.lnn.test.SmackTest" classpathref="compile.classpath" />
+  </target>
+
+  <target name="all" depends="package" />
+
+</project>
