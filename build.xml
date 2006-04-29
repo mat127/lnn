@@ -1,5 +1,5 @@
 <!--
-  $Id: build.xml,v 1.2 2006/04/29 20:00:34 mat127 Exp $
+  $Id: build.xml,v 1.3 2006/04/29 20:31:52 mat127 Exp $
 
   The Lotus Notes Notifier build file
 -->
@@ -65,27 +65,32 @@
 	  </javadoc>
   </target>
 
+  <!-- package agent jar -->
   <target name="package" depends="compile">
     <jar destfile="${build.dir}/lnn.jar">
 		  <fileset dir="${class.dir}" excludes="net/sf/lnn/test/**" />  
 		</jar>
   </target>
 
+  <!-- package binary distribution -->
   <target name="package-bin" depends="package, doc">
 		<jar destfile="${build.dir}/lnn-${lnn.version}.jar">
-		  <zipfileset file="${build.dir}/lnn.jar"/>
-	    <zipfileset file="${conf.dir}/lnn.properties"/>
-	    <zipfileset dir="${doc.dir}" prefix="doc"/>
+		  <zipfileset file="${build.dir}/lnn.jar" prefix="lnn-${lnn.version}" />
+	    <zipfileset file="${conf.dir}/lnn.properties" prefix="lnn-${lnn.version}" />
+	    <zipfileset dir="${doc.dir}" prefix="lnn-${lnn.version}/doc"/>
 	  </jar>
   </target>
 
+  <!-- package source code distribution -->
   <target name="package-src" depends="doc">
-		<jar destfile="${build.dir}/lnn-${lnn.version}-src.jar" basedir="${basedir}">
-		  <include name="src/**/*.java"/>
-		  <exclude name="src/net/sf/lnn/test/**"/>
-	    <include name="etc/lnn.properties"/>
-		  <include name="build.xml"/>
-		  <include name="build.properties"/>
+		<jar destfile="${build.dir}/lnn-${lnn.version}-src.jar">
+		  <zipfileset dir="${basedir}" prefix="lnn-${lnn.version}-src">
+			  <include name="src/**/*.java"/>
+			  <exclude name="src/net/sf/lnn/test/**"/>
+		    <include name="etc/lnn.properties"/>
+			  <include name="build.xml"/>
+			  <include name="build.properties"/>
+	    </zipfileset>
 	  </jar>
   </target>
 
