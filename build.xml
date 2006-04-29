@@ -1,12 +1,8 @@
 <!--
-  $Id: build.xml,v 1.1 2006/04/19 13:53:48 mat127 Exp $
+  $Id: build.xml,v 1.2 2006/04/29 20:00:34 mat127 Exp $
 
-  DESCRIPTION
-
-  @author Petr Matousek <petr.matousek@billboard.cz>
-  @since  2005-02-16
+  The Lotus Notes Notifier build file
 -->
-
 <project name="lnn" default="all" basedir=".">
 
   <property file="${basedir}/build.properties"/>
@@ -14,13 +10,20 @@
   <property name="src.dir"   value="${basedir}/src"/>
   <property name="build.dir" value="${basedir}/build"/>
   <property name="class.dir" value="${build.dir}/classes"/>
-  <property name="docs.dir"  value="${basedir}/docs"/>
+  <property name="doc.dir"  value="${basedir}/doc/api"/>
+  <property name="conf.dir"  value="${basedir}/etc"/>
+
+  <!-- default properties file if the "lnn.properties.file" property is not set -->
+  <condition property="lnn.properties.file" value="${conf.dir}/lnn.properties">
+	  <not><isset property="lnn.properties.file"/></not>
+	</condition>
 
   <!-- Lotus Notes classpath -->
   <path id="notes.classpath">
     <pathelement location="${notes.home}/Notes.jar"/>
   </path>
 
+  <!-- Smack API (http://www.jivesoftware.org/smack/) -->
   <path id="smack.classpath">
     <pathelement location="${smack.home}/smack.jar" />
     <pathelement location="${smack.home}/smackx.jar" />
@@ -36,11 +39,13 @@
   <!-- Initialises the build -->
   <target name="prepare">
     <mkdir dir="${class.dir}"/>
+    <mkdir dir="${doc.dir}"/>
   </target>
 
   <!-- Clean up the build -->
   <target name="clean">
-   <delete dir="${build.dir}" />
+		<delete dir="${build.dir}" />
+    <delete dir="${doc.dir}" />
   </target>
 
   <!-- Compiles the source code -->
@@ -50,10 +55,46 @@
     </javac>
   </target>
 
+  <!-- generate API docs -->
+  <target name="doc" depends="compile">
+	  <javadoc destdir="${doc.dir}" classpathref="compile.classpath">
+	    <fileset dir="${src.dir}">
+	      <include name="net/sf/lnn/DocumentNotifier.java"/>
+	      <include name="net/sf/lnn/DocumentNotifierException.java"/>
+	    </fileset>
+	  </javadoc>
+  </target>
+
   <target name="package" depends="compile">
     <jar destfile="${build.dir}/lnn.jar">
 		  <fileset dir="${class.dir}" excludes="net/sf/lnn/test/**" />  
 		</jar>
+  </target>
+
+  <target name="package-bin" depends="package, doc">
+		<jar destfile="${build.dir}/lnn-${lnn.version}.jar">
+		  <zipfileset file="${build.dir}/lnn.jar"/>
+	    <zipfileset file="${conf.dir}/lnn.properties"/>
+	    <zipfileset dir="${doc.dir}" prefix="doc"/>
+	  </jar>
+  </target>
+
+  <target name="package-src" depends="doc">
+		<jar destfile="${build.dir}/lnn-${lnn.version}-src.jar" basedir="${basedir}">
+		  <include name="src/**/*.java"/>
+		  <exclude name="src/net/sf/lnn/test/**"/>
+	    <include name="etc/lnn.properties"/>
+		  <include name="build.xml"/>
+		  <include name="build.properties"/>
+	  </jar>
+  </target>
+
+  <!-- It is neccessary for the agent installation to have all the jars in the same dir -->
+  <target name="install" depends="package">
+    <copy todir="${build.dir}">
+      <fileset dir="${smack.home}" includes="smack.jar,smackx.jar"/>
+    </copy>
+    <copy file="${lnn.properties.file}" tofile="${build.dir}/lnn.properties" overwrite="true"/>
   </target>
 
   <target name="test-jabber" depends="compile">
