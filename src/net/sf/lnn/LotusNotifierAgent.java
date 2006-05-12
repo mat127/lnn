@@ -99,6 +99,7 @@ public class LotusNotifierAgent extends AgentBase {
           doc = unprocessed.getNextDocument()
         ) {
           process(doc);
+          agentContext.updateProcessedDoc(doc);
         }
 
     } catch(Exception e) {
