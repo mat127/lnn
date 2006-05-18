@@ -12,47 +12,203 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 <ol>
   <li><a href="#contents">Contents</a></li>
   <li><a href="#intro">Introduction</a></li>
+  <li><a href="#download">Download</a></li>
   <li><a href="#req">Requirements</a></li>
   <li><a href="#build">Building</a></li>
   <li><a href="#install">Installation</a></li>
+  <li><a href="#trouble">Troubleshooting</a></li>
+  <li><a href="#feedback">Feedback</a></li>
+  <li><a href="#ack">Acknowledgements</a></li>
+  <li><a href="#links">Links</a></li>
 </ol>
 
 <h2><a name="intro">2. Introduction</a></h2>
 
-<p>This document describes how to <a href="#build">build</a> and <a
-  href="#install">install</a> the <b>Lotus Notes Notifier</b>. It is a
-simple <a href="http://java.sun.com">Java</a> agent intended for
-notification about incoming emails or any other database/document
-changes within the <a href="http://www.ibm.com/software/lotus">Lotus
-Domino</a> server.</p>
+<p>The <em>Lotus Notes Notifier</em> is a <a href="http://java.sun.com/">Java</a>
+agent for the <a href="http://www.ibm.com/software/lotus/">Lotus Domino</a>
+server that notifies the user about e-mails incoming to his/her e-mail
+database. The notification is done by the means of the
+<a href="http://www.jabber.org/">Jabber</a> XMMP protocol that is
+supported by many instant messaging clients
+(e.g <a href="http://gaim.sourceforge.net/">Gaim</a>).</p>
 
-<h2><a name="req">3. Requirements</a></h2>
-<h3><a name="req">3.1 Basic</a></h3>
+<p>Typical usage scenario is following:</p>
+<ol>
+  <li>install the <em>Lotus Notes Notifier</em> agent on the Lotus
+  Domino server where your e-mail database resides</li>
+  <li>start the IM client (the Lotus Notes client need not to be
+  running!)</li>
+  <li>whenever new e-mail arrives to your inbox the agent sends you
+  short message containing its From and Subject fields</li>
+</ol>
+<p>Cool, is not it? But there is more ...</p>
+
+<p>The architecture of the <em>Lotus
+Notes Notifier</em> is open and users can write their own plugins supporting
+other types of notification channels like e.g. other IM protocols, SMS, etc.
+Moreover during the installation process you can attach the agent to some other
+database (not just e-mail) and event you want to be notified about.
+If you are interested in this possibility have a look at the
+<a href="api/index.html">JavaDoc plugin API specification</a> and source
+code of the Jabber notifier. Unfortunately the complete manual describing
+how to write your own notification plugins is out of scope of this document,
+but can be written in future.
+Anyway if you have developed some notification plugins you are strongly
+encouraged to share them with the community of other users! I am sure that there
+are others that will find them very useful too.</p>
+
+<h2><a name="download">3. Download</a></h2>
+<p>You can download binary distribution or source code
+of the <em>Lotus Notes Notifier</em> from its
+<a href="http://sourceforge.net/projects/lnn/">project page</a>
+at the <a href="http://sourceforge.net">sourceforge.net</a>.
+
+</p>
+
+<h2><a name="req">4. Requirements</a></h2>
+<h3><a name="req">4.1 Basic</a></h3>
 <ul>
   <li><a href="http://www.ibm.com/software/lotus">Lotus Notes 6.5.x
   client</a></li>
+  <li><a href="http://www.jivesoftware.org/smack/">Smack API library</a>
+  (Jabber XMMP protocol)</li>
 </ul>
-<h3><a name="req">3.2 Optional - Jabber Notifier</a></h3>
-<ul>
-  <li><a href="http://www.jivesoftware.org/smack/">Smack library</a></li>
-</ul>
-<h3><a name="req">3.2 Optional - Building</a></h3>
+<h3><a name="req">4.2 Optional (Building)</a></h3>
 <ul>
   <li><a href="http://java.sun.com/j2se/">Java 2 SDK</a></li>
   <li><a href="http://ant.apache.org/">Ant</a></li>
 </ul>
 
-<h2><a name="build">Building</a></h2>
+<h2><a name="build">5. Building</a></h2>
 
-<h2><a name="install">Installation</a></h2>
+<p>To be written ...</p>
+
+<h2><a name="install">6. Installation</a></h2>
 <ol>
-  <li>Download binary distribution of the Lotus Notes Notifier from <a
-    href="http://sf.net/projects/lnn/">http://sf.net/projects/lnn/</a>
-  or build your own following steps described in section <a
-    href="#build">4</a></li>
-  <li>Start Lotus Notes, login and open the e-mail database</li>
-  <li>Select <em>View - Agents</em> from menu, an list of agents working
-  woth the e-mail database appears</li>
+  <li>Download binary distribution of the <em>Lotus Notes Notifier</em> from
+  <a href="http://sourceforge.net/projects/lnn/">http://sf.net/projects/lnn/</a>
+  and unpack it:
+  <blockquote><code>jar -xvf lnn-X.Y.Z.jar</code></blockquote>
+  Or instead of downloading you can build the <em>Lotus Notes Notifier</em>
+  from the source code following steps described in section <a href="#build">4</a>
+  </li>
+
+  <li>Download the Smack library from
+  <a href="http://www.jivesoftware.org/smack/">http://www.jivesoftware.org/smack/</a>.
+  Unzip the archive and copy the <em>smack.jar</em> and <em>smackx.jar</em>
+  files to the same directory where the <em>lnn.jar</em> and <em>lnn.properties</em>
+  are. (i.e. root directory of binary distribution or the <em>build</em> directory
+  of the source code tree)
+  </li>
+
+  <li>For the Jabber notifier plugin you will need two Jabber accounts. One for
+  the agent to send the notification messages and the latter one for you to receive
+  them. If you do not have such accounts already create them by the means of
+  your Jabber client. Do not forget to remember your usernames and passwords,
+  you will need them later.
+  </li>
+
+  <li>Start your favourite text editor and edit the <em>lnn.properties</em>
+  file according to your needs. Comments in the sample file describes each
+  property in detail. At least you will need to provide hostname of the
+  jabber server from which the agent should send messages and username and
+  password that it should use for logging in there.
+  </li>
+  
+  <li>Now everything is prepared and you can create the agent. So start Lotus
+  Notes, login and open the e-mail database.
+  </li>
+
+  <li>Select <em>Create - Agent</em> from menu and new agent form appears.
+  Fill in its name (e.g. Lotus Notes Notifier) and optionally comment.
+  Mark it as <em>Private</em> (<em>Options</em> controls).
+  Within the <em>Runtime</em> controls select:
+  <ul>
+  <li>Trigger: On event - After new mail has arrived</li>
+  <li>Target: Newly received mail documents</li>
+  </ul>
+  </li>
+
+  <li>At the top of the dialog switch to the security tab (marked with the
+  key symbol). For <em>Set runtime security level</em> select <em>Allow
+  restricted operations with full administration rights</em>. Close the dialog.
+  </li>
+
+  <li>Select the <em>Action</em> item in the the left tree pane of the agent
+  design window. On the right top select <em>Imported Java</em> from
+  the <em>Run</em> combo box. Then push the button <em>Import Class Files...</em>
+  at the bottom of the window. In the dialog that appears select the directory
+  where you unzipped the binary distribution and import following files:
+  <ul>
+  <li>lnn.jar</li>
+  <li>lnn.properties (your edited version with your settings)</li>
+  <li>smack.jar</li>
+  <li>smackx.jar</li>
+  </ul>
+  Note that this step requires that all these files are in the same directory.
+  </li>
+  
+  <li>In the <em>Base class</em> text box enter:
+  <blockquote><code>net.sf.lnn.LotusNotifierAgent</code></blockquote>
+  </li>
+
+  <li>Close the agent design window and confirm to save changes. The installation
+  is finished.
+  </li>
+
+  <li>Now start your Jabber client, login and wait for notification messages.
+  To test the installation send an email to your Lotus Domino e-mail account.
+  You should receive a notification message within 5 minutes after the mail arrival
+  to the Domino server.
+  </li>
 </ol>
+
+<h2><a name="trouble">7. Troubleshooting</a></h2>
+
+<p>When things go wrong and you do not receive any notifications try to look
+into the <em>note's log</em> database. You will see some exception stack traces
+there that will tell you what is wrong. Furthermore you can set the property:</p>
+<blockquote><code>lnn.debug = true</code></blockquote>
+<p>in the <em>lnn.properties</em> file and the agent will be more verbose.
+Its messages you will find again in the <em>note's log</em> database.
+</p>
+
+<h2><a name="feedback">8. Feedback</a></h2>
+
+<p>Any kind of feedback (questions, bug reports, feature requests or comments)
+is welcome. For this purpose use the forums, bug and request trackers that you
+will find at the <a href="http://sourceforge.net/projects/lnn/">project page</a>
+at the <a href="http://sourceforge.net/">SourceForge.net</a>.
+</p>
+
+<h2><a name="ack">9. Acknowledgements</a></h2>
+
+<p>I would like to thank to Vladan Kl&iacute;ma - my friend and also the administrator of
+the Lotus Domino server installation that was used for debugging
+the <em>Lotus Notes Notifier</em>. Without his excellent knowledge and skills
+this piece of software would never be released.
+</p>
+
+<h2><a name="links">10. Links</a></h2>
+<ul>
+<li><a href="http://sourceforge.net/projects/lnn/">Lotus Notes Notifier</a>
+at the <a href="http://sourceforge.net/">SourceForge.net</a></li>
+
+<li><a href="http://www.ibm.com/software/lotus">IBM Lotus Software</a>
+</li>
+
+<li><a href="http://www.jabber.org/">Jabber Software Foundation</a>
+</li>
+
+<li><a href="http://www.jivesoftware.org/smack/">Smack API</a>
+</li>
+
+<li><a href="http://gaim.sourceforge.net/">Gaim</a></li>
+
+<li><a href="http://java.sun.com/j2se/">Java</a></li>
+
+<li><a href="http://ant.apache.org/">Apache Ant</a></li>
+</ul>
+
 </body>
 </html>
